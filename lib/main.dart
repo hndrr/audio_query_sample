@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fab_circular_menu/fab_circular_menu.dart';
@@ -170,8 +171,12 @@ class _SongsState extends State<Songs> {
                   // ),
                   // ignore: avoid_print
                   onTap: () async {
-                    await audioPlayer.play(item.data![index].uri!);
-                    // print('tap${item.data![index].uri}');
+                    await audioPlayer.play(
+                      Platform.isAndroid
+                          ? item.data![index].data
+                          : item.data![index].uri!,
+                    );
+
                     if (fabKey.currentState!.isOpen) {
                       fabKey.currentState!.close();
                     } else {
