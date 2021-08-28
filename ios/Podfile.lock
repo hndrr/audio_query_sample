@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - on_audio_query (2.0.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - on_audio_query (from `.symlinks/plugins/on_audio_query/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  on_audio_query:
+    :path: ".symlinks/plugins/on_audio_query/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  on_audio_query: 2ce3cc034bfcf80fd3830f3862979e772363a7e1
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1
