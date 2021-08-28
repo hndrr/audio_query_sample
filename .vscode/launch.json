@@ -22,5 +22,6 @@
             "type": "dart",
             "flutterMode": "release"
         },
-    ]
+    ],
+    "dart.flutterSdkPaths": [".fvm/flutter_sdk"]
 }
