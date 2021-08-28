@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -129,11 +131,43 @@ class _SongsState extends State<Songs> {
                   // trailing: const Icon(Icons.play_arrow),
                   // This Widget will query/load image. Just add the id and type.
                   // You can use/create your own widget/method using [queryArtwork].
-                  leading: QueryArtworkWidget(
-                    artworkBorder: BorderRadius.zero,
-                    id: item.data![index].id,
-                    type: ArtworkType.AUDIO,
-                  ),
+                  leading: FutureBuilder<Uint8List?>(
+                      future: OnAudioQuery().queryArtwork(
+                        item.data![index].id,
+                        ArtworkType.AUDIO,
+                        format: ArtworkFormat.JPEG,
+                        size: 200,
+                      ),
+                      builder: (context, item) {
+                        if (item.data != null && item.data!.isNotEmpty) {
+                          return ClipRRect(
+                            // borderRadius: BorderRadius.circular(50),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.memory(
+                              item.data!,
+                              gaplessPlayback: false,
+                              repeat: ImageRepeat.noRepeat,
+                              scale: 1,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              // color: artworkColor,
+                              // colorBlendMode: artworkBlendMode,
+                              filterQuality: FilterQuality.low,
+                            ),
+                          );
+                        } else {
+                          return const Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                          );
+                        }
+                      }),
+                  // QueryArtworkWidget(
+                  //   artworkBorder: BorderRadius.zero,
+                  //   id: item.data![index].id,
+                  //   type: ArtworkType.AUDIO,
+                  // ),
                   // ignore: avoid_print
                   onTap: () async {
                     await audioPlayer.play(item.data![index].uri!);
