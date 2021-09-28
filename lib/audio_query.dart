@@ -39,7 +39,24 @@ class AudioQuery extends StatelessWidget {
               itemCount: item.data!.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(item.data![index].title),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.data![index].album!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        item.data![index].title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                   subtitle: Text(item.data![index].artist ?? 'No Artist'),
                   // trailing: const Icon(Icons.play_arrow),
                   // This Widget will query/load image. Just add the id and type.
