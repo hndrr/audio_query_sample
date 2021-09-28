@@ -195,7 +195,7 @@ class _AppState extends State<App> {
   Widget _audioQueryBody(BuildContext context) {
     return FutureBuilder<List<SongModel>>(
       future: OnAudioQuery().querySongs(
-        sortType: SongSortType.DEFAULT,
+        sortType: SongSortType.ALBUM,
         orderType: OrderType.ASC_OR_SMALLER,
         uriType: UriType.EXTERNAL,
       ),
@@ -268,11 +268,23 @@ class _AppState extends State<App> {
                       : item.data![index].uri!,
                 );
 
-                if (fabKey.currentState!.isOpen) {
-                  fabKey.currentState!.close();
+                if (_isPlaying == true) {
+                  await pauseAudio();
+                  setState(() {
+                    _isPlaying = false;
+                  });
                 } else {
-                  fabKey.currentState!.open();
+                  await resumeAudio();
+                  setState(() {
+                    _isPlaying = true;
+                  });
                 }
+
+                // if (fabKey.currentState!.isOpen) {
+                //   fabKey.currentState!.close();
+                // } else {
+                //   fabKey.currentState!.open();
+                // }
               },
             );
           },
