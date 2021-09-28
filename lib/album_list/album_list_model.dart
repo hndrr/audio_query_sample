@@ -9,11 +9,11 @@ class AlbumListModel extends ChangeNotifier {
   // List<MusicInfo> _viewList = <MusicInfo>[];
   // List<MusicInfo> get viewList => _viewList;
 
-  List<SongModel> _albumList = <SongModel>[];
-  List<SongModel> get albumList => _albumList;
+  // List<AlbumModel> _albumList = <AlbumModel>[];
+  // List<AlbumModel> get albumList => _albumList;
 
-  // List<SongInfo> _songList = <SongInfo>[];
-  // List<SongInfo> get songList => _songList;
+  List<SongModel> _songList = <SongModel>[];
+  List<SongModel> get songList => _songList;
 
   // List<MusicInfo> _viewSongList = <MusicInfo>[];
   // List<MusicInfo> get viewSongList => _viewSongList;
@@ -70,7 +70,15 @@ class AlbumListModel extends ChangeNotifier {
     // });
   }
 
-  Future<List<SongModel>> getAlbum() async {
+  Future<List<AlbumModel>> getAlbum() async {
+    return OnAudioQuery().queryAlbums(
+      sortType: AlbumSortType.ARTIST,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+    );
+  }
+
+  Future<List<SongModel>> getSongsSortAlbums() async {
     return OnAudioQuery().querySongs(
       sortType: SongSortType.ALBUM,
       orderType: OrderType.ASC_OR_SMALLER,
@@ -78,7 +86,16 @@ class AlbumListModel extends ChangeNotifier {
     );
   }
 
-  Future<List<SongModel>> getArtist() async {
+  Future<List<SongModel>> getSongsSpecificAlbum(int id) async {
+    _songList = await getSongsSortAlbums();
+    final _selectSongList = _songList
+        .where((element) => element.albumId == id)
+        .toList()
+          ..sort((a, b) => a.track!.toInt().compareTo(b.track!.toInt()));
+    return _selectSongList;
+  }
+
+  Future<List<SongModel>> getSongsSortArtists() async {
     return OnAudioQuery().querySongs(
       sortType: SongSortType.ARTIST,
       orderType: OrderType.ASC_OR_SMALLER,
@@ -86,11 +103,21 @@ class AlbumListModel extends ChangeNotifier {
     );
   }
 
-  Future<Uint8List?> getArtwork(
+  Future<Uint8List?> getSongsArtwork(
       AsyncSnapshot<List<SongModel>> item, int index) async {
     return OnAudioQuery().queryArtwork(
       item.data![index].id,
       ArtworkType.AUDIO,
+      format: ArtworkFormat.JPEG,
+      size: 200,
+    );
+  }
+
+  Future<Uint8List?> getAlbumArtwork(
+      AsyncSnapshot<List<AlbumModel>> item, int index) async {
+    return OnAudioQuery().queryArtwork(
+      item.data![index].id,
+      ArtworkType.ALBUM,
       format: ArtworkFormat.JPEG,
       size: 200,
     );

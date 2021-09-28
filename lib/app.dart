@@ -1,10 +1,8 @@
-import 'dart:typed_data';
-
-import 'package:audio_query_sample/audio_query.dart';
 import 'package:audio_query_sample/file_picker.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+
+import 'album_list/album_list.dart';
 
 // ignore: use_key_in_widget_constructors
 class App extends StatefulWidget {
@@ -33,14 +31,14 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     final _widgetList = <Widget>[
       // _audioQueryBody(context),
-      AudioQuery(),
+      AlbumListPage(),
       FilePickerDemo(),
     ];
 
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('OnAudioQueryExample'),
+          title: const Text('OnAudioQueryList'),
           elevation: 2,
         ),
         body: _widgetList.elementAt(_selectedIndex),
