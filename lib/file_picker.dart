@@ -140,144 +140,158 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: DropdownButton<FileType>(
-                    hint: const Text('LOAD PATH FROM'),
-                    value: _pickingType,
-                    items: FileType.values
-                        .map((fileType) => DropdownMenuItem<FileType>(
-                              value: fileType,
-                              child: Text(fileType.toString()),
-                            ))
-                        .toList(),
-                    onChanged: (value) => setState(() {
-                          _pickingType = value!;
-                          if (_pickingType != FileType.custom) {
-                            _controller.text = _extension = '';
-                          }
-                        })),
-              ),
-              ConstrainedBox(
-                constraints: const BoxConstraints.tightFor(width: 100),
-                child: _pickingType == FileType.custom
-                    ? TextFormField(
-                        maxLength: 15,
-                        autovalidateMode: AutovalidateMode.always,
-                        controller: _controller,
-                        decoration: const InputDecoration(
-                          labelText: 'File extension',
-                        ),
-                        keyboardType: TextInputType.text,
-                        textCapitalization: TextCapitalization.none,
-                      )
-                    : const SizedBox(),
-              ),
-              ConstrainedBox(
-                constraints: const BoxConstraints.tightFor(width: 200),
-                child: SwitchListTile.adaptive(
-                  title: const Text(
-                    'Pick multiple files',
-                    textAlign: TextAlign.right,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('FilePicker'),
+        elevation: 2,
+      ),
+      body: SafeArea(
+        top: false,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: DropdownButton<FileType>(
+                        hint: const Text('LOAD PATH FROM'),
+                        value: _pickingType,
+                        items: FileType.values
+                            .map((fileType) => DropdownMenuItem<FileType>(
+                                  value: fileType,
+                                  child: Text(fileType.toString()),
+                                ))
+                            .toList(),
+                        onChanged: (value) => setState(() {
+                              _pickingType = value!;
+                              if (_pickingType != FileType.custom) {
+                                _controller.text = _extension = '';
+                              }
+                            })),
                   ),
-                  onChanged: (bool value) => setState(() => _multiPick = value),
-                  value: _multiPick,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 50, bottom: 20),
-                child: Column(
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: _pickFiles,
-                      child: Text(_multiPick ? 'Pick files' : 'Pick file'),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints.tightFor(width: 100),
+                    child: _pickingType == FileType.custom
+                        ? TextFormField(
+                            maxLength: 15,
+                            autovalidateMode: AutovalidateMode.always,
+                            controller: _controller,
+                            decoration: const InputDecoration(
+                              labelText: 'File extension',
+                            ),
+                            keyboardType: TextInputType.text,
+                            textCapitalization: TextCapitalization.none,
+                          )
+                        : const SizedBox(),
+                  ),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints.tightFor(width: 200),
+                    child: SwitchListTile.adaptive(
+                      title: const Text(
+                        'Pick multiple files',
+                        textAlign: TextAlign.right,
+                      ),
+                      onChanged: (bool value) =>
+                          setState(() => _multiPick = value),
+                      value: _multiPick,
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _selectFolder,
-                      child: const Text('Pick folder'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50, bottom: 20),
+                    child: Column(
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: _pickFiles,
+                          child: Text(_multiPick ? 'Pick files' : 'Pick file'),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: _selectFolder,
+                          child: const Text('Pick folder'),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: _saveFile,
+                          child: const Text('Save file'),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: _clearCachedFiles,
+                          child: const Text('Clear temporary files'),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _saveFile,
-                      child: const Text('Save file'),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _clearCachedFiles,
-                      child: const Text('Clear temporary files'),
-                    ),
-                  ],
-                ),
-              ),
-              Builder(
-                builder: (BuildContext context) => _isLoading
-                    ? const Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: CircularProgressIndicator(),
-                      )
-                    : _userAborted
+                  ),
+                  Builder(
+                    builder: (BuildContext context) => _isLoading
                         ? const Padding(
                             padding: EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              'User has aborted the dialog',
-                            ),
+                            child: CircularProgressIndicator(),
                           )
-                        : _directoryPath != null
-                            ? ListTile(
-                                title: const Text('Directory path'),
-                                subtitle: Text(_directoryPath!),
+                        : _userAborted
+                            ? const Padding(
+                                padding: EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  'User has aborted the dialog',
+                                ),
                               )
-                            : _paths != null
-                                ? Container(
-                                    padding: const EdgeInsets.only(bottom: 30),
-                                    height: MediaQuery.of(context).size.height *
-                                        0.50,
-                                    child: Scrollbar(
-                                        child: ListView.separated(
-                                      itemCount:
-                                          _paths != null && _paths!.isNotEmpty
+                            : _directoryPath != null
+                                ? ListTile(
+                                    title: const Text('Directory path'),
+                                    subtitle: Text(_directoryPath!),
+                                  )
+                                : _paths != null
+                                    ? Container(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 30),
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.50,
+                                        child: Scrollbar(
+                                            child: ListView.separated(
+                                          itemCount: _paths != null &&
+                                                  _paths!.isNotEmpty
                                               ? _paths!.length
                                               : 1,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final isMultiPath = _paths != null &&
-                                            _paths!.isNotEmpty;
-                                        final name =
-                                            // ignore: lines_longer_than_80_chars
-                                            '${'File $index: '}${isMultiPath ? _paths!.map((e) => e.name).toList()[index] : _fileName ?? '...'}';
-                                        final path = _paths!
-                                            .map((e) => e.path)
-                                            .toList()[index]
-                                            .toString();
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            final isMultiPath =
+                                                _paths != null &&
+                                                    _paths!.isNotEmpty;
+                                            final name =
+                                                // ignore: lines_longer_than_80_chars
+                                                '${'File $index: '}${isMultiPath ? _paths!.map((e) => e.name).toList()[index] : _fileName ?? '...'}';
+                                            final path = _paths!
+                                                .map((e) => e.path)
+                                                .toList()[index]
+                                                .toString();
 
-                                        return ListTile(
-                                          title: Text(
-                                            name,
-                                          ),
-                                          subtitle: Text(path),
-                                        );
-                                      },
-                                      separatorBuilder:
-                                          (BuildContext context, int index) =>
-                                              const Divider(),
-                                    )),
-                                  )
-                                : _saveAsFileName != null
-                                    ? ListTile(
-                                        title: const Text('Save file'),
-                                        subtitle: Text(_saveAsFileName!),
+                                            return ListTile(
+                                              title: Text(
+                                                name,
+                                              ),
+                                              subtitle: Text(path),
+                                            );
+                                          },
+                                          separatorBuilder:
+                                              (BuildContext context,
+                                                      int index) =>
+                                                  const Divider(),
+                                        )),
                                       )
-                                    : const SizedBox(),
+                                    : _saveAsFileName != null
+                                        ? ListTile(
+                                            title: const Text('Save file'),
+                                            subtitle: Text(_saveAsFileName!),
+                                          )
+                                        : const SizedBox(),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
