@@ -3,6 +3,7 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 
 import 'album_list/album_list.dart';
+import 'album_list/artist_list.dart';
 
 // ignore: use_key_in_widget_constructors
 class App extends StatefulWidget {
@@ -31,23 +32,22 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     final _widgetList = <Widget>[
       // _audioQueryBody(context),
-      AlbumListPage(),
+      const AlbumListPage(),
+      const ArtistListPage(),
       FilePickerDemo(),
     ];
 
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('OnAudioQueryList'),
-          elevation: 2,
-        ),
         body: _widgetList.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: Icon(Icons.home), label: 'audioQuery'),
+                icon: Icon(Icons.album_rounded), label: 'album'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.photo_album), label: 'FilePicker'),
+                icon: Icon(Icons.person_search_rounded), label: 'artist'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.insert_drive_file), label: 'FilePicker'),
           ],
           currentIndex: _selectedIndex,
           fixedColor: Colors.blueAccent,

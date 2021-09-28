@@ -9,8 +9,8 @@ class AlbumListModel extends ChangeNotifier {
   // List<MusicInfo> _viewList = <MusicInfo>[];
   // List<MusicInfo> get viewList => _viewList;
 
-  // List<AlbumModel> _albumList = <AlbumModel>[];
-  // List<AlbumModel> get albumList => _albumList;
+  List<AlbumModel> _albumList = <AlbumModel>[];
+  List<AlbumModel> get albumList => _albumList;
 
   List<SongModel> _songList = <SongModel>[];
   List<SongModel> get songList => _songList;
@@ -70,17 +70,29 @@ class AlbumListModel extends ChangeNotifier {
     // });
   }
 
-  Future<List<AlbumModel>> getAlbum() async {
-    return OnAudioQuery().queryAlbums(
+  Future<List<AlbumModel>> getAlbum(String? artist) async {
+    _albumList = await OnAudioQuery().queryAlbums(
       sortType: AlbumSortType.ARTIST,
       orderType: OrderType.ASC_OR_SMALLER,
       uriType: UriType.EXTERNAL,
     );
+    if (artist != null) {
+      return _albumList.where((element) => element.artist == artist).toList();
+    }
+    return _albumList;
   }
 
   Future<List<SongModel>> getSongsSortAlbums() async {
     return OnAudioQuery().querySongs(
       sortType: SongSortType.ALBUM,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+    );
+  }
+
+  Future<List<ArtistModel>> getArtists() async {
+    return OnAudioQuery().queryArtists(
+      sortType: ArtistSortType.ARTIST,
       orderType: OrderType.ASC_OR_SMALLER,
       uriType: UriType.EXTERNAL,
     );
@@ -118,6 +130,16 @@ class AlbumListModel extends ChangeNotifier {
     return OnAudioQuery().queryArtwork(
       item.data![index].id,
       ArtworkType.ALBUM,
+      format: ArtworkFormat.JPEG,
+      size: 200,
+    );
+  }
+
+  Future<Uint8List?> getArtistArtwork(
+      AsyncSnapshot<List<ArtistModel>> item, int index) async {
+    return OnAudioQuery().queryArtwork(
+      item.data![index].id,
+      ArtworkType.ARTIST,
       format: ArtworkFormat.JPEG,
       size: 200,
     );
