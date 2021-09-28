@@ -1,15 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
-import 'album_list/album_list_model.dart';
+import 'album_detail.dart';
+import 'album_list_model.dart';
 
-class AudioQuery extends StatelessWidget {
-  final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
-
+class AlbumListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AlbumListModel>(
@@ -18,7 +16,7 @@ class AudioQuery extends StatelessWidget {
         AlbumListModel model,
         Widget? child,
       ) {
-        return FutureBuilder<List<SongModel>>(
+        return FutureBuilder<List<AlbumModel>>(
           future: model.getAlbum(),
           builder: (context, item) {
             // Loading content
@@ -43,16 +41,10 @@ class AudioQuery extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item.data![index].album!,
+                        item.data![index].album,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        item.data![index].title,
-                        style: const TextStyle(
-                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -62,7 +54,7 @@ class AudioQuery extends StatelessWidget {
                   // This Widget will query/load image. Just add the id and type.
                   // You can use/create your own widget/method using [queryArtwork].
                   leading: FutureBuilder<Uint8List?>(
-                      future: model.getArtwork(item, index),
+                      future: model.getAlbumArtwork(item, index),
                       builder: (context, item) {
                         if (item.data != null && item.data!.isNotEmpty) {
                           return ClipRRect(
@@ -94,16 +86,13 @@ class AudioQuery extends StatelessWidget {
                   //   type: ArtworkType.AUDIO,
                   // ),
                   // ignore: avoid_print
-                  onTap: () async {
-                    await model.playAudio(item, index);
-
-                    if (model.isPlaying == true) {
-                      await model.pauseAudio();
-                      model.pausePlaying();
-                    } else {
-                      await model.resumeAudio();
-                      model.startPlaying();
-                    }
+                  onTap: () {
+                    Navigator.of(context).push<dynamic>(
+                      MaterialPageRoute<dynamic>(
+                        builder: (context) =>
+                            AlbumDetailPage(id: item.data![index].albumId),
+                      ),
+                    );
                   },
                 );
               },
