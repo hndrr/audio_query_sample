@@ -3,14 +3,11 @@ import 'dart:typed_data';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
 
 import 'album_list/album_list_model.dart';
 
 class AudioQuery extends StatelessWidget {
-  OnAudioQuery audioQuery = OnAudioQuery();
-  AudioPlayer audioPlayer = AudioPlayer();
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
 
   @override
