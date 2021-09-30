@@ -109,7 +109,8 @@ class _AppState extends State<App> {
 //               ),
 //               RawMaterialButton(
 //                 onPressed: () async {
-//                   await audioPlayer.seek(const Duration(milliseconds: -1200));
+//                   await audioPlayer.seek(const Duration(milliseconds: -1200),
+//                    );
 //                 },
 //                 shape: const CircleBorder(),
 //                 padding: const EdgeInsets.all(24),

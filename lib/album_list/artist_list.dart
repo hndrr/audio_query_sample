@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
-import 'album_list.dart';
+// import 'album_list.dart';
 import 'album_list_model.dart';
+import 'artist_album_list.dart';
 
 class ArtistListPage extends StatelessWidget {
   const ArtistListPage({
@@ -98,8 +99,8 @@ class ArtistListPage extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push<dynamic>(
                         MaterialPageRoute<dynamic>(
-                          builder: (context) =>
-                              AlbumListPage(artist: item.data![index].artist),
+                          builder: (context) => ArtistAlbumListPage(
+                              artist: item.data![index].artist),
                         ),
                       );
                     },
