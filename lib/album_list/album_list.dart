@@ -29,7 +29,7 @@ class AlbumListPage extends StatelessWidget {
             elevation: 2,
           ),
           body: FutureBuilder<List<AlbumModel>>(
-            future: model.getAlbum(artist),
+            future: model.getAlbum(),
             builder: (context, item) {
               // Loading content
               if (item.data == null) {

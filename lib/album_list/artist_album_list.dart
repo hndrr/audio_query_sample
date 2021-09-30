@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
-// import 'album_list.dart';
+import 'album_detail.dart';
 import 'album_list_model.dart';
-import 'artist_album_list.dart';
 
-class ArtistListPage extends StatelessWidget {
-  const ArtistListPage({
+class ArtistAlbumListPage extends StatelessWidget {
+  const ArtistAlbumListPage({
     Key? key,
+    this.artist,
   }) : super(key: key);
+
+  final String? artist;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +28,8 @@ class ArtistListPage extends StatelessWidget {
             title: const Text('OnAudioQueryList'),
             elevation: 2,
           ),
-          body: FutureBuilder<List<ArtistModel>>(
-            future: model.getArtists(),
+          body: FutureBuilder<List<dynamic>>(
+            future: model.getArtistAlbum(artist),
             builder: (context, item) {
               // Loading content
               if (item.data == null) {
@@ -42,7 +44,7 @@ class ArtistListPage extends StatelessWidget {
               }
 
               // You can use [item.data!] direct or you can create a:
-              // List<SongModel> songs = item.data!;
+              final albums = item.data!.toAlbumModel();
               return ListView.builder(
                 itemCount: item.data!.length,
                 itemBuilder: (context, index) {
@@ -51,7 +53,7 @@ class ArtistListPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.data![index].artist,
+                          albums[index].album,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -59,12 +61,12 @@ class ArtistListPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // subtitle: Text(item.data![index].artist),
+                    subtitle: Text(albums[index].artist ?? 'No Artist'),
                     // trailing: const Icon(Icons.play_arrow),
                     // This Widget will query/load image. Just add the id and type.
                     // You can use/create your own widget/method using [queryArtwork].
                     leading: FutureBuilder<Uint8List?>(
-                        future: model.getArtistArtwork(item, index),
+                        future: model.getArtistAlbumArtwork(albums, index),
                         builder: (context, item) {
                           if (item.data != null && item.data!.isNotEmpty) {
                             return ClipRRect(
@@ -99,8 +101,8 @@ class ArtistListPage extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push<dynamic>(
                         MaterialPageRoute<dynamic>(
-                          builder: (context) => ArtistAlbumListPage(
-                              artist: item.data![index].artist),
+                          builder: (context) =>
+                              AlbumDetailPage(id: albums[index].albumId),
                         ),
                       );
                     },
