@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AlbumListModel extends ChangeNotifier {
-  // List<MusicInfo> _viewList = <MusicInfo>[];
-  // List<MusicInfo> get viewList => _viewList;
-
   List<AlbumModel> _albumList = <AlbumModel>[];
   List<AlbumModel> get albumList => _albumList;
 
   List<SongModel> _songList = <SongModel>[];
   List<SongModel> get songList => _songList;
+
+  // List<MusicInfo> _viewList = <MusicInfo>[];
+  // List<MusicInfo> get viewList => _viewList;
 
   // List<MusicInfo> _viewSongList = <MusicInfo>[];
   // List<MusicInfo> get viewSongList => _viewSongList;
