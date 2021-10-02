@@ -8,6 +8,16 @@ class AudioQueryRepository {
   // create a FlutterAudioQuery instance.
   final OnAudioQuery _audioQuery = OnAudioQuery();
 
+  dynamic requestPermission() async {
+    final permissionStatus = await _audioQuery.permissionsStatus();
+    if (!permissionStatus) {
+      await _audioQuery.permissionsRequest();
+    }
+    // setState(() {
+    //   //
+    // });
+  }
+
   Future<List<AlbumModel>> fetchLocalAlbum() async {
     return _audioQuery.queryAlbums(
       sortType: AlbumSortType.ARTIST,
@@ -16,9 +26,34 @@ class AudioQueryRepository {
     );
   }
 
-  Future<List<SongModel>> fetchSongFromAlbum(MusicInfo musicInfo) async {
+  Future<List<ArtistModel>> fetchArtists() async {
+    return _audioQuery.queryArtists(
+      sortType: ArtistSortType.ARTIST,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+    );
+  }
+
+  Future<List<dynamic>> fetchArtistAlbums(String artist) async {
+    return _audioQuery.queryWithFilters(
+      artist,
+      WithFiltersType.ALBUMS,
+      args: AlbumsArgs.ARTIST,
+    );
+  }
+
+  Future<List<SongModel>> fetchSongFromAlbum() async {
     final songList = await _audioQuery.querySongs(
       sortType: SongSortType.ALBUM,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+    );
+    return songList;
+  }
+
+  Future<List<SongModel>> fetchSongFromArtists() async {
+    final songList = await _audioQuery.querySongs(
+      sortType: SongSortType.ARTIST,
       orderType: OrderType.ASC_OR_SMALLER,
       uriType: UriType.EXTERNAL,
     );
@@ -28,7 +63,7 @@ class AudioQueryRepository {
   List<MusicInfo> toMusicInfoListFromAlbumList(List<AlbumModel> albumInfoList) {
     final albums = albumInfoList
         .map((AlbumModel item) => MusicInfo(
-              item.albumId.toString(),
+              item.albumId,
               item.album,
               item.album, // 曲と共用してるのでAlbumはtitleと同じものを入れた
               item.artist!,
@@ -42,7 +77,7 @@ class AudioQueryRepository {
     final songs = songInfoList
         .map(
           (SongModel song) => MusicInfo(
-            song.id.toString(),
+            song.id,
             song.title,
             albumTitle,
             song.artist!,
@@ -65,7 +100,7 @@ class AudioQueryRepository {
   MusicInfo? toMusicInfoFromAlbumInfo(AlbumModel? albumInfo) {
     return albumInfo != null
         ? MusicInfo(
-            albumInfo.id.toString(),
+            albumInfo.id,
             albumInfo.album,
             albumInfo.album, // 曲と共用してるのでAlbumはtitleと同じものを入れた
             albumInfo.artist!,
@@ -75,13 +110,13 @@ class AudioQueryRepository {
 
   // audioQuery.getArtworkのラッパー
   Future<Uint8List?> getArtworkByByte(
-    ArtworkType artworkType,
     int id,
+    ArtworkType artworkType,
   ) async {
     final rawData = await _audioQuery.queryArtwork(
       id,
       artworkType,
-      format: ArtworkFormat.PNG,
+      format: ArtworkFormat.JPEG,
       size: 200,
     );
     return rawData;

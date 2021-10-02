@@ -2,12 +2,15 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_query_sample/domain/audio_players_repository.dart';
+import 'package:audio_query_sample/domain/audio_query_repository.dart';
+import 'package:audio_query_sample/domain/music_info.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AlbumListModel extends ChangeNotifier {
   final AudioPlayersRepository _audioPlayersRepository =
       AudioPlayersRepository();
+  final AudioQueryRepository _audioQueryRepository = AudioQueryRepository();
 
   List<AlbumModel> _albumList = <AlbumModel>[];
   List<AlbumModel> get albumList => _albumList;
@@ -15,8 +18,8 @@ class AlbumListModel extends ChangeNotifier {
   List<SongModel> _songList = <SongModel>[];
   List<SongModel> get songList => _songList;
 
-  // List<MusicInfo> _viewList = <MusicInfo>[];
-  // List<MusicInfo> get viewList => _viewList;
+  List<MusicInfo> _viewList = <MusicInfo>[];
+  List<MusicInfo> get viewList => _viewList;
 
   // List<MusicInfo> _viewSongList = <MusicInfo>[];
   // List<MusicInfo> get viewSongList => _viewSongList;
@@ -48,42 +51,26 @@ class AlbumListModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
-    await _audioPlayersRepository.playAudio(item, index);
-  }
-
   Future<void> init() async {
     startLoading();
     if (Platform.isAndroid) {
       debugPrint('AlbumListModel: called init()');
-      requestPermission();
+      _audioQueryRepository.requestPermission();
       _audioPlayersRepository.initPlayer();
-
-      // _albumList = await _audioQueryRepository.fetchLocalAlbum();
-      // _albumList = await getAlbum();
-      // _viewList =
-      //     _audioQueryRepository.toMusicInfoListFromAlbumList(_albumList);
+      _albumList = await getAlbum();
+      _viewList =
+          _audioQueryRepository.toMusicInfoListFromAlbumList(_albumList);
     }
     endLoading();
     notifyListeners();
   }
 
-  dynamic requestPermission() async {
-    final permissionStatus = await audioQuery.permissionsStatus();
-    if (!permissionStatus) {
-      await audioQuery.permissionsRequest();
-    }
-    // setState(() {
-    //   //
-    // });
+  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
+    await _audioPlayersRepository.playAudio(item, index);
   }
 
   Future<List<AlbumModel>> getAlbum() async {
-    return _albumList = await OnAudioQuery().queryAlbums(
-      sortType: AlbumSortType.ARTIST,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
+    return _albumList = await _audioQueryRepository.fetchLocalAlbum();
     // if (artist != null) {
     //  return _albumList.where((element) => element.artist == artist).toList();
     // }
@@ -91,37 +78,21 @@ class AlbumListModel extends ChangeNotifier {
 
   Future<List<dynamic>> getArtistAlbum(String? artist) async {
     if (artist == null) {
-      return OnAudioQuery().queryAlbums(
-        sortType: AlbumSortType.ARTIST,
-        orderType: OrderType.ASC_OR_SMALLER,
-        uriType: UriType.EXTERNAL,
-      );
+      return _audioQueryRepository.fetchLocalAlbum();
     }
-    return OnAudioQuery().queryWithFilters(
-      artist,
-      WithFiltersType.ALBUMS,
-      args: AlbumsArgs.ARTIST,
-    );
+    return _audioQueryRepository.fetchArtistAlbums(artist);
   }
 
   Future<List<SongModel>> getSongsSortAlbums() async {
-    return OnAudioQuery().querySongs(
-      sortType: SongSortType.ALBUM,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
+    return _audioQueryRepository.fetchSongFromAlbum();
   }
 
   Future<List<ArtistModel>> getArtists() async {
-    return OnAudioQuery().queryArtists(
-      sortType: ArtistSortType.ARTIST,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
+    return _audioQueryRepository.fetchArtists();
   }
 
   Future<List<SongModel>> getSongsSpecificAlbum(int id) async {
-    _songList = await getSongsSortAlbums();
+    _songList = await _audioQueryRepository.fetchSongFromAlbum();
     final _selectSongList = _songList
         .where((element) => element.albumId == id)
         .toList()
@@ -130,50 +101,47 @@ class AlbumListModel extends ChangeNotifier {
   }
 
   Future<List<SongModel>> getSongsSortArtists() async {
-    return OnAudioQuery().querySongs(
-      sortType: SongSortType.ARTIST,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
+    return _audioQueryRepository.fetchSongFromArtists();
   }
 
   Future<Uint8List?> getSongsArtwork(
-      AsyncSnapshot<List<SongModel>> item, int index) async {
-    return OnAudioQuery().queryArtwork(
+    AsyncSnapshot<List<SongModel>> item,
+    int index,
+  ) async {
+    return _audioQueryRepository.getArtworkByByte(
       item.data![index].id,
       ArtworkType.AUDIO,
-      format: ArtworkFormat.JPEG,
-      size: 200,
     );
   }
 
   Future<Uint8List?> getArtistAlbumArtwork(
       List<AlbumModel> albums, int index) async {
-    return OnAudioQuery().queryArtwork(
+    return _audioQueryRepository.getArtworkByByte(
       albums[index].id,
       ArtworkType.ALBUM,
-      format: ArtworkFormat.PNG,
-      size: 200,
     );
   }
 
-  Future<Uint8List?> getAlbumArtwork(
-      AsyncSnapshot<List<AlbumModel>> item, int index) async {
-    return OnAudioQuery().queryArtwork(
-      item.data![index].id,
+  Future<Uint8List?> getAlbumArtwork(List<MusicInfo> albums, int index) async {
+    return _audioQueryRepository.getArtworkByByte(
+      albums[index].id,
       ArtworkType.ALBUM,
-      format: ArtworkFormat.PNG,
-      size: 200,
     );
   }
+
+  // Future<Uint8List?> getAlbumArtwork(
+  //     AsyncSnapshot<List<AlbumModel>> item, int index) async {
+  //   return _audioQueryRepository.getArtworkByByte(
+  //     item.data![index].id,
+  //     ArtworkType.ALBUM,
+  //   );
+  // }
 
   Future<Uint8List?> getArtistArtwork(
       AsyncSnapshot<List<ArtistModel>> item, int index) async {
-    return OnAudioQuery().queryArtwork(
+    return _audioQueryRepository.getArtworkByByte(
       item.data![index].id,
       ArtworkType.ARTIST,
-      format: ArtworkFormat.JPEG,
-      size: 200,
     );
   }
 }
