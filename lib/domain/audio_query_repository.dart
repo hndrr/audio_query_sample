@@ -50,8 +50,8 @@ class AudioQueryRepository {
           ),
         )
         .toList()
-          ..sort((MusicInfo a, MusicInfo b) =>
-              a.track!.compareTo(b.track!.toInt()));
+      ..sort(
+          (MusicInfo a, MusicInfo b) => a.track!.compareTo(b.track!.toInt()));
     return songs;
   }
 
@@ -62,7 +62,7 @@ class AudioQueryRepository {
     return result;
   }
 
-  MusicInfo? toMusicInfoFromAlbumInfo(AlbumModel albumInfo) {
+  MusicInfo? toMusicInfoFromAlbumInfo(AlbumModel? albumInfo) {
     return albumInfo != null
         ? MusicInfo(
             albumInfo.id.toString(),

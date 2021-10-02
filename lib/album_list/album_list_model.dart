@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_query_sample/domain/audio_players_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AlbumListModel extends ChangeNotifier {
+  final AudioPlayersRepository _audioPlayersRepository =
+      AudioPlayersRepository();
+
   List<AlbumModel> _albumList = <AlbumModel>[];
   List<AlbumModel> get albumList => _albumList;
 
@@ -19,7 +22,6 @@ class AlbumListModel extends ChangeNotifier {
   // List<MusicInfo> get viewSongList => _viewSongList;
 
   OnAudioQuery audioQuery = OnAudioQuery();
-  AudioPlayer audioPlayer = AudioPlayer();
 
   bool isLoading = false;
   bool isPlaying = false;
@@ -36,12 +38,18 @@ class AlbumListModel extends ChangeNotifier {
 
   void startPlaying() {
     isPlaying = true;
+    _audioPlayersRepository.resumeAudio();
     notifyListeners();
   }
 
   void pausePlaying() {
     isPlaying = false;
+    _audioPlayersRepository.pauseAudio();
     notifyListeners();
+  }
+
+  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
+    await _audioPlayersRepository.playAudio(item, index);
   }
 
   Future<void> init() async {
@@ -49,7 +57,7 @@ class AlbumListModel extends ChangeNotifier {
     if (Platform.isAndroid) {
       debugPrint('AlbumListModel: called init()');
       requestPermission();
-      initPlayer();
+      _audioPlayersRepository.initPlayer();
 
       // _albumList = await _audioQueryRepository.fetchLocalAlbum();
       // _albumList = await getAlbum();
@@ -117,7 +125,7 @@ class AlbumListModel extends ChangeNotifier {
     final _selectSongList = _songList
         .where((element) => element.albumId == id)
         .toList()
-          ..sort((a, b) => a.track!.toInt().compareTo(b.track!.toInt()));
+      ..sort((a, b) => a.track!.toInt().compareTo(b.track!.toInt()));
     return _selectSongList;
   }
 
@@ -167,64 +175,5 @@ class AlbumListModel extends ChangeNotifier {
       format: ArtworkFormat.JPEG,
       size: 200,
     );
-  }
-
-  void initPlayer() {
-    audioPlayer = AudioPlayer();
-
-    // audioPlayer.durationHandler = (d) => setState(
-    //       () {
-    //         _duration = d;
-    //       },
-    //     );
-    // audioPlayer.positionHandler = (p) => setState(
-    //       () {
-    //         _position = p;
-    //       },
-    //     );
-  }
-
-  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
-    await audioPlayer.play(
-      Platform.isAndroid ? item.data![index].data : item.data![index].uri!,
-    );
-  }
-
-  void seekToSecond(int second) {
-    final newDuration = Duration(seconds: second);
-    audioPlayer.seek(newDuration);
-  }
-
-  Future<void> pauseAudio() async {
-    final response = await audioPlayer.pause();
-    if (response == 1) {
-      // success
-
-    } else {
-      // ignore: avoid_print
-      print('Some error occured in pausing');
-    }
-  }
-
-  Future<void> stopAudio() async {
-    final response = await audioPlayer.stop();
-    if (response == 1) {
-      // success
-
-    } else {
-      // ignore: avoid_print
-      print('Some error occured in stopping');
-    }
-  }
-
-  Future<void> resumeAudio() async {
-    final response = await audioPlayer.resume();
-    if (response == 1) {
-      // success
-
-    } else {
-      // ignore: avoid_print
-      print('Some error occured in resuming');
-    }
   }
 }

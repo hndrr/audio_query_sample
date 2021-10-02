@@ -125,10 +125,8 @@ class AlbumDetailPage extends StatelessWidget {
                         await model.playAudio(item, index);
 
                         if (model.isPlaying == true) {
-                          await model.pauseAudio();
                           model.pausePlaying();
                         } else {
-                          await model.resumeAudio();
                           model.startPlaying();
                         }
                       },
