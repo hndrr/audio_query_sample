@@ -6,15 +6,22 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   audioplayers: ^0.19.1
+  cached_network_image: ^3.1.0
+  cloud_firestore: ^2.5.3
   cupertino_icons: ^1.0.2
   fab_circular_menu: ^1.0.2
   file_picker: ^4.1.2
+  firebase_auth: ^3.1.1
+  firebase_core: ^1.6.0
+  firebase_crashlytics: ^2.2.1
+  firebase_storage: ^10.0.3
   flutter:
     sdk: flutter
+  google_sign_in: ^5.1.1
   on_audio_query: ^2.4.2
   path_provider: ^2.0.4
   pedantic_mono: ^1.14.0
