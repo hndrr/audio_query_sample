@@ -9,7 +9,7 @@ class MusicInfo {
   }
 
   // id
-  String id;
+  int id;
 
   // 曲名orアルバム名
   String title;
