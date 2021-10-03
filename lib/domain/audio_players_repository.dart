@@ -1,8 +1,5 @@
-import 'dart:io';
-
+import 'package:audio_query_sample/domain/music_info.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 
 class AudioPlayersRepository {
   AudioPlayer audioPlayer = AudioPlayer();
@@ -22,10 +19,8 @@ class AudioPlayersRepository {
     //     );
   }
 
-  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
-    await audioPlayer.play(
-      Platform.isAndroid ? item.data![index].data : item.data![index].uri!,
-    );
+  Future<void> playAudio(MusicInfo songlist) async {
+    await audioPlayer.play(songlist.filePath!);
   }
 
   void seekToSecond(int second) {

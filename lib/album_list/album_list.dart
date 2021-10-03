@@ -22,12 +22,18 @@ class AlbumListPage extends StatelessWidget {
         AlbumListModel model,
         Widget? child,
       ) {
+        if (artist != null) {
+          model.getArtistAlbum(artist!);
+        }
+        final musicInfos =
+            artist == null ? model.viewList : model.viewArtistAlbumList;
+
         return Scaffold(
           appBar: AppBar(
             title: const Text('OnAudioQueryList'),
             elevation: 2,
           ),
-          body: model.viewList.isEmpty
+          body: musicInfos.isEmpty
               ?
               // Expanded(
               //     child:
@@ -46,9 +52,9 @@ class AlbumListPage extends StatelessWidget {
               : ListView.builder(
                   cacheExtent: 10000,
                   scrollDirection: Axis.vertical,
-                  itemCount: model.viewList.length,
+                  itemCount: musicInfos.length,
                   itemBuilder: (context, index) {
-                    final musicInfo = model.viewList[index];
+                    final musicInfo = musicInfos[index];
 
                     return ListTile(
                       title: Column(
@@ -68,7 +74,7 @@ class AlbumListPage extends StatelessWidget {
                       // This Widget will query/load image. Just add the id and type.
                       // You can use/create your own widget/method using [queryArtwork].
                       leading: FutureBuilder<Uint8List?>(
-                          future: model.getAlbumArtwork(model.viewList, index),
+                          future: model.getAlbumArtwork(musicInfo),
                           builder: (context, item) {
                             if (item.data != null && item.data!.isNotEmpty) {
                               return ClipRRect(
@@ -101,10 +107,11 @@ class AlbumListPage extends StatelessWidget {
                       // ),
                       // ignore: avoid_print
                       onTap: () {
+                        model.getSongsSpecificAlbum(musicInfo.id);
                         Navigator.of(context).push<dynamic>(
                           MaterialPageRoute<dynamic>(
-                            builder: (context) =>
-                                AlbumDetailPage(id: musicInfo.id),
+                            builder: (context) => AlbumDetailPage(
+                                albumTitle: musicInfo.albumTitle),
                           ),
                         );
                       },
