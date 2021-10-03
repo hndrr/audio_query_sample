@@ -14,17 +14,14 @@ class AlbumListModel extends ChangeNotifier {
   List<AlbumModel> _albumList = <AlbumModel>[];
   List<AlbumModel> get albumList => _albumList;
 
-  List<AlbumModel> _artistAlbumList = <AlbumModel>[];
-  List<AlbumModel> get artistAlbumList => _artistAlbumList;
-
-  List<MusicInfo> _viewArtistAlbumList = <MusicInfo>[];
-  List<MusicInfo> get viewArtistAlbumList => _viewArtistAlbumList;
-
   List<SongModel> _songList = <SongModel>[];
   List<SongModel> get songList => _songList;
 
   List<MusicInfo> _viewList = <MusicInfo>[];
   List<MusicInfo> get viewList => _viewList;
+
+  List<MusicInfo> _viewArtistAlbumList = <MusicInfo>[];
+  List<MusicInfo> get viewArtistAlbumList => _viewArtistAlbumList;
 
   List<MusicInfo> _viewSongList = <MusicInfo>[];
   List<MusicInfo> get viewSongList => _viewSongList;
@@ -64,8 +61,10 @@ class AlbumListModel extends ChangeNotifier {
     debugPrint('AlbumListModel: called init()');
     _audioQueryRepository.requestPermission();
     _audioPlayersRepository.initPlayer();
+    // Albumのリストを取得
     await getAlbum();
-    // await getSongsSortAlbums();
+    // 曲のリストを取得
+    await getSongsSortAlbums();
     // _viewSongList =
     //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
     endLoading();
@@ -82,10 +81,8 @@ class AlbumListModel extends ChangeNotifier {
   }
 
   Future<void> getArtistAlbum(String artist) async {
-    _artistAlbumList =
-        _albumList.where((element) => element.artist == artist).toList();
     _viewArtistAlbumList =
-        _audioQueryRepository.toMusicInfoListFromAlbumList(_artistAlbumList);
+        _viewList.where((element) => element.artist == artist).toList();
   }
 
   // Future<List<dynamic>> getArtistAlbum(String artist) async {

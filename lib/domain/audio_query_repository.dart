@@ -89,7 +89,7 @@ class AudioQueryRepository {
             song.title,
             albumTitle ?? '',
             song.artist!,
-            track: song.track,
+            track: Platform.isAndroid ? song.track! - 1000 : song.track,
             filePath: Platform.isAndroid ? song.data : song.uri,
           ),
         )
