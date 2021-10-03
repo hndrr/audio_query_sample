@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:on_audio_query/on_audio_query.dart';
@@ -60,6 +61,13 @@ class AudioQueryRepository {
     return songList;
   }
 
+  Future<AlbumModel> getAlbumInfoById(String id) async {
+    final albums = await fetchLocalAlbum();
+    final result = albums
+        .singleWhere((AlbumModel albumInfo) => albumInfo.id.toString() == id);
+    return result;
+  }
+
   List<MusicInfo> toMusicInfoListFromAlbumList(List<AlbumModel> albumInfoList) {
     final albums = albumInfoList
         .map((AlbumModel item) => MusicInfo(
@@ -72,29 +80,23 @@ class AudioQueryRepository {
     return albums;
   }
 
-  List<MusicInfo> toMusicInfoListFromSongList(
-      List<SongModel> songInfoList, String albumTitle) {
+  List<MusicInfo> toMusicInfoListFromSongList(List<SongModel> songInfoList,
+      {String? albumTitle}) {
     final songs = songInfoList
         .map(
           (SongModel song) => MusicInfo(
-            song.id,
+            song.albumId!,
             song.title,
-            albumTitle,
+            albumTitle ?? '',
             song.artist!,
             track: song.track,
+            filePath: Platform.isAndroid ? song.data : song.uri,
           ),
         )
         .toList()
       ..sort(
           (MusicInfo a, MusicInfo b) => a.track!.compareTo(b.track!.toInt()));
     return songs;
-  }
-
-  Future<AlbumModel> getAlbumInfoById(String id) async {
-    final albums = await fetchLocalAlbum();
-    final result = albums
-        .singleWhere((AlbumModel albumInfo) => albumInfo.id.toString() == id);
-    return result;
   }
 
   MusicInfo? toMusicInfoFromAlbumInfo(AlbumModel? albumInfo) {

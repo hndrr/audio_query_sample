@@ -15,14 +15,23 @@ class AlbumListModel extends ChangeNotifier {
   List<AlbumModel> _albumList = <AlbumModel>[];
   List<AlbumModel> get albumList => _albumList;
 
+  List<AlbumModel> _artistAlbumList = <AlbumModel>[];
+  List<AlbumModel> get artistAlbumList => _artistAlbumList;
+
+  List<MusicInfo> _viewArtistAlbumList = <MusicInfo>[];
+  List<MusicInfo> get viewArtistAlbumList => _viewArtistAlbumList;
+
   List<SongModel> _songList = <SongModel>[];
   List<SongModel> get songList => _songList;
 
   List<MusicInfo> _viewList = <MusicInfo>[];
   List<MusicInfo> get viewList => _viewList;
 
-  // List<MusicInfo> _viewSongList = <MusicInfo>[];
-  // List<MusicInfo> get viewSongList => _viewSongList;
+  List<MusicInfo> _viewSongList = <MusicInfo>[];
+  List<MusicInfo> get viewSongList => _viewSongList;
+
+  List<MusicInfo> _selectSongList = <MusicInfo>[];
+  List<MusicInfo> get selectSongList => _selectSongList;
 
   OnAudioQuery audioQuery = OnAudioQuery();
 
@@ -57,91 +66,62 @@ class AlbumListModel extends ChangeNotifier {
       debugPrint('AlbumListModel: called init()');
       _audioQueryRepository.requestPermission();
       _audioPlayersRepository.initPlayer();
-      _albumList = await getAlbum();
-      _viewList =
-          _audioQueryRepository.toMusicInfoListFromAlbumList(_albumList);
+      await getAlbum();
+      await getSongsSortAlbums();
+      // _viewSongList =
+      //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
     }
     endLoading();
     notifyListeners();
   }
 
-  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
-    await _audioPlayersRepository.playAudio(item, index);
+  Future<void> playAudio(MusicInfo songList) async {
+    await _audioPlayersRepository.playAudio(songList);
   }
 
-  Future<List<AlbumModel>> getAlbum() async {
-    return _albumList = await _audioQueryRepository.fetchLocalAlbum();
-    // if (artist != null) {
-    //  return _albumList.where((element) => element.artist == artist).toList();
-    // }
+  Future<void> getAlbum() async {
+    _albumList = await _audioQueryRepository.fetchLocalAlbum();
+    _viewList = _audioQueryRepository.toMusicInfoListFromAlbumList(_albumList);
   }
 
-  Future<List<dynamic>> getArtistAlbum(String? artist) async {
-    if (artist == null) {
-      return _audioQueryRepository.fetchLocalAlbum();
-    }
-    return _audioQueryRepository.fetchArtistAlbums(artist);
+  Future<void> getArtistAlbum(String artist) async {
+    _artistAlbumList =
+        _albumList.where((element) => element.artist == artist).toList();
+    _viewArtistAlbumList =
+        _audioQueryRepository.toMusicInfoListFromAlbumList(_artistAlbumList);
   }
 
-  Future<List<SongModel>> getSongsSortAlbums() async {
-    return _audioQueryRepository.fetchSongFromAlbum();
-  }
+  // Future<List<dynamic>> getArtistAlbum(String artist) async {
+  //   return _audioQueryRepository.fetchArtistAlbums(artist);
+  // }
 
-  Future<List<ArtistModel>> getArtists() async {
-    return _audioQueryRepository.fetchArtists();
-  }
-
-  Future<List<SongModel>> getSongsSpecificAlbum(int id) async {
+  Future<void> getSongsSortAlbums() async {
     _songList = await _audioQueryRepository.fetchSongFromAlbum();
-    final _selectSongList = _songList
-        .where((element) => element.albumId == id)
+    _viewSongList =
+        _audioQueryRepository.toMusicInfoListFromSongList(_songList);
+  }
+
+  List<MusicInfo> getSongsSpecificAlbum(int id) {
+    // _songList = await _audioQueryRepository.fetchSongFromAlbum();
+    _selectSongList = _viewSongList
+        .where((element) => element.id == id)
         .toList()
       ..sort((a, b) => a.track!.toInt().compareTo(b.track!.toInt()));
+    notifyListeners();
     return _selectSongList;
   }
 
-  Future<List<SongModel>> getSongsSortArtists() async {
-    return _audioQueryRepository.fetchSongFromArtists();
-  }
-
-  Future<Uint8List?> getSongsArtwork(
-    AsyncSnapshot<List<SongModel>> item,
-    int index,
-  ) async {
+  Future<Uint8List?> getAlbumArtwork(MusicInfo album) async {
     return _audioQueryRepository.getArtworkByByte(
-      item.data![index].id,
-      ArtworkType.AUDIO,
-    );
-  }
-
-  Future<Uint8List?> getArtistAlbumArtwork(
-      List<AlbumModel> albums, int index) async {
-    return _audioQueryRepository.getArtworkByByte(
-      albums[index].id,
+      album.id,
       ArtworkType.ALBUM,
     );
   }
 
-  Future<Uint8List?> getAlbumArtwork(List<MusicInfo> albums, int index) async {
+  Future<Uint8List?> getSongsArtwork(MusicInfo song) async {
     return _audioQueryRepository.getArtworkByByte(
-      albums[index].id,
+      song.id,
       ArtworkType.ALBUM,
-    );
-  }
-
-  // Future<Uint8List?> getAlbumArtwork(
-  //     AsyncSnapshot<List<AlbumModel>> item, int index) async {
-  //   return _audioQueryRepository.getArtworkByByte(
-  //     item.data![index].id,
-  //     ArtworkType.ALBUM,
-  //   );
-  // }
-
-  Future<Uint8List?> getArtistArtwork(
-      AsyncSnapshot<List<ArtistModel>> item, int index) async {
-    return _audioQueryRepository.getArtworkByByte(
-      item.data![index].id,
-      ArtworkType.ARTIST,
     );
   }
 }
