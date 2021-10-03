@@ -12,15 +12,6 @@ class ArtistListModel extends ChangeNotifier {
 
   OnAudioQuery audioQuery = OnAudioQuery();
 
-  // List<MusicInfo> _viewList = <MusicInfo>[];
-  // List<MusicInfo> get viewList => _viewList;
-
-  // List<MusicInfo> _viewSongList = <MusicInfo>[];
-  // List<MusicInfo> get viewSongList => _viewSongList;
-
-  // List<MusicInfo> _selectSongList = <MusicInfo>[];
-  // List<MusicInfo> get selectSongList => _selectSongList;
-
   bool isLoading = false;
 
   void startLoading() {
@@ -37,8 +28,6 @@ class ArtistListModel extends ChangeNotifier {
     startLoading();
     _audioQueryRepository.requestPermission();
     _artistList = await getArtists();
-    // _viewSongList =
-    //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
     endLoading();
     notifyListeners();
   }
