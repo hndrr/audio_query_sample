@@ -3,7 +3,7 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 
 import 'album_list/album_list.dart';
-import 'album_list/artist_list.dart';
+import 'artist_list/artist_list.dart';
 
 // ignore: use_key_in_widget_constructors
 class App extends StatefulWidget {
@@ -13,8 +13,6 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
-  bool _visible = false;
-  String filedataPath = '';
   int _selectedIndex = 0;
 
   @override
