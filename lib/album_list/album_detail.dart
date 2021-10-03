@@ -82,7 +82,7 @@ class AlbumDetailPage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      '${songList.track! - 1000}',
+                                      '${songList.track!}',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontStyle: FontStyle.italic,
