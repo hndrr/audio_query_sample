@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_query_sample/domain/audio_players_repository.dart';
@@ -62,15 +61,13 @@ class AlbumListModel extends ChangeNotifier {
 
   Future<void> init() async {
     startLoading();
-    if (Platform.isAndroid) {
-      debugPrint('AlbumListModel: called init()');
-      _audioQueryRepository.requestPermission();
-      _audioPlayersRepository.initPlayer();
-      await getAlbum();
-      await getSongsSortAlbums();
-      // _viewSongList =
-      //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
-    }
+    debugPrint('AlbumListModel: called init()');
+    _audioQueryRepository.requestPermission();
+    _audioPlayersRepository.initPlayer();
+    await getAlbum();
+    // await getSongsSortAlbums();
+    // _viewSongList =
+    //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
     endLoading();
     notifyListeners();
   }
