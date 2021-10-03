@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 class MusicInfo {
   // ignore: lines_longer_than_80_chars
   MusicInfo(this.id, this.title, this.albumTitle, this.artist,
-      {this.artworkUri, this.track}) {
+      {this.artworkUri, this.track, this.filePath}) {
     _playState = PlayState.none;
   }
 
   // id
-  String id;
+  int id;
 
   // 曲名orアルバム名
   String title;
@@ -29,7 +29,7 @@ class MusicInfo {
   // 曲情報を保持する場合の曲順
   int? track;
 
-  //String filePath;
+  String? filePath;
 
   PlayState? _playState;
 

@@ -42,8 +42,10 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
           ?.files;
     } on PlatformException catch (e) {
       _logException('Unsupported operation$e');
-    } catch (e) {
-      _logException('$e');
+    } on Exception catch (e) {
+      _logException(e.toString());
+    } on Error catch (e) {
+      _logException(e.toString());
     }
     if (!mounted) return;
     setState(() {
@@ -68,7 +70,9 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
       );
     } on PlatformException catch (e) {
       _logException('Unsupported operation$e');
-    } catch (e) {
+    } on Exception catch (e) {
+      _logException(e.toString());
+    } on Error catch (e) {
       _logException(e.toString());
     } finally {
       setState(() => _isLoading = false);
@@ -85,7 +89,9 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
       });
     } on PlatformException catch (e) {
       _logException('Unsupported operation$e');
-    } catch (e) {
+    } on Exception catch (e) {
+      _logException(e.toString());
+    } on Error catch (e) {
       _logException(e.toString());
     } finally {
       setState(() => _isLoading = false);
@@ -107,7 +113,9 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
       });
     } on PlatformException catch (e) {
       _logException('Unsupported operation$e');
-    } catch (e) {
+    } on Exception catch (e) {
+      _logException(e.toString());
+    } on Error catch (e) {
       _logException(e.toString());
     } finally {
       setState(() => _isLoading = false);

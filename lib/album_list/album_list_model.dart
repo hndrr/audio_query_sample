@@ -1,25 +1,38 @@
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_query_sample/domain/audio_players_repository.dart';
+import 'package:audio_query_sample/domain/audio_query_repository.dart';
+import 'package:audio_query_sample/domain/music_info.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class AlbumListModel extends ChangeNotifier {
+  final AudioPlayersRepository _audioPlayersRepository =
+      AudioPlayersRepository();
+  final AudioQueryRepository _audioQueryRepository = AudioQueryRepository();
+
   List<AlbumModel> _albumList = <AlbumModel>[];
   List<AlbumModel> get albumList => _albumList;
+
+  List<AlbumModel> _artistAlbumList = <AlbumModel>[];
+  List<AlbumModel> get artistAlbumList => _artistAlbumList;
+
+  List<MusicInfo> _viewArtistAlbumList = <MusicInfo>[];
+  List<MusicInfo> get viewArtistAlbumList => _viewArtistAlbumList;
 
   List<SongModel> _songList = <SongModel>[];
   List<SongModel> get songList => _songList;
 
-  // List<MusicInfo> _viewList = <MusicInfo>[];
-  // List<MusicInfo> get viewList => _viewList;
+  List<MusicInfo> _viewList = <MusicInfo>[];
+  List<MusicInfo> get viewList => _viewList;
 
-  // List<MusicInfo> _viewSongList = <MusicInfo>[];
-  // List<MusicInfo> get viewSongList => _viewSongList;
+  List<MusicInfo> _viewSongList = <MusicInfo>[];
+  List<MusicInfo> get viewSongList => _viewSongList;
+
+  List<MusicInfo> _selectSongList = <MusicInfo>[];
+  List<MusicInfo> get selectSongList => _selectSongList;
 
   OnAudioQuery audioQuery = OnAudioQuery();
-  AudioPlayer audioPlayer = AudioPlayer();
 
   bool isLoading = false;
   bool isPlaying = false;
@@ -36,195 +49,76 @@ class AlbumListModel extends ChangeNotifier {
 
   void startPlaying() {
     isPlaying = true;
+    _audioPlayersRepository.resumeAudio();
     notifyListeners();
   }
 
   void pausePlaying() {
     isPlaying = false;
+    _audioPlayersRepository.pauseAudio();
     notifyListeners();
   }
 
   Future<void> init() async {
     startLoading();
-    if (Platform.isAndroid) {
-      debugPrint('AlbumListModel: called init()');
-      requestPermission();
-      initPlayer();
-
-      // _albumList = await _audioQueryRepository.fetchLocalAlbum();
-      // _albumList = await getAlbum();
-      // _viewList =
-      //     _audioQueryRepository.toMusicInfoListFromAlbumList(_albumList);
-    }
+    debugPrint('AlbumListModel: called init()');
+    _audioQueryRepository.requestPermission();
+    _audioPlayersRepository.initPlayer();
+    await getAlbum();
+    // await getSongsSortAlbums();
+    // _viewSongList =
+    //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
     endLoading();
     notifyListeners();
   }
 
-  dynamic requestPermission() async {
-    final permissionStatus = await audioQuery.permissionsStatus();
-    if (!permissionStatus) {
-      await audioQuery.permissionsRequest();
-    }
-    // setState(() {
-    //   //
-    // });
+  Future<void> playAudio(MusicInfo songList) async {
+    await _audioPlayersRepository.playAudio(songList);
   }
 
-  Future<List<AlbumModel>> getAlbum() async {
-    return _albumList = await OnAudioQuery().queryAlbums(
-      sortType: AlbumSortType.ARTIST,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
-    // if (artist != null) {
-    //  return _albumList.where((element) => element.artist == artist).toList();
-    // }
+  Future<void> getAlbum() async {
+    _albumList = await _audioQueryRepository.fetchLocalAlbum();
+    _viewList = _audioQueryRepository.toMusicInfoListFromAlbumList(_albumList);
   }
 
-  Future<List<dynamic>> getArtistAlbum(String? artist) async {
-    if (artist == null) {
-      return OnAudioQuery().queryAlbums(
-        sortType: AlbumSortType.ARTIST,
-        orderType: OrderType.ASC_OR_SMALLER,
-        uriType: UriType.EXTERNAL,
-      );
-    }
-    return OnAudioQuery().queryWithFilters(
-      artist,
-      WithFiltersType.ALBUMS,
-      args: AlbumsArgs.ARTIST,
-    );
+  Future<void> getArtistAlbum(String artist) async {
+    _artistAlbumList =
+        _albumList.where((element) => element.artist == artist).toList();
+    _viewArtistAlbumList =
+        _audioQueryRepository.toMusicInfoListFromAlbumList(_artistAlbumList);
   }
 
-  Future<List<SongModel>> getSongsSortAlbums() async {
-    return OnAudioQuery().querySongs(
-      sortType: SongSortType.ALBUM,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
+  // Future<List<dynamic>> getArtistAlbum(String artist) async {
+  //   return _audioQueryRepository.fetchArtistAlbums(artist);
+  // }
+
+  Future<void> getSongsSortAlbums() async {
+    _songList = await _audioQueryRepository.fetchSongFromAlbum();
+    _viewSongList =
+        _audioQueryRepository.toMusicInfoListFromSongList(_songList);
   }
 
-  Future<List<ArtistModel>> getArtists() async {
-    return OnAudioQuery().queryArtists(
-      sortType: ArtistSortType.ARTIST,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
-  }
-
-  Future<List<SongModel>> getSongsSpecificAlbum(int id) async {
-    _songList = await getSongsSortAlbums();
-    final _selectSongList = _songList
-        .where((element) => element.albumId == id)
+  List<MusicInfo> getSongsSpecificAlbum(int id) {
+    // _songList = await _audioQueryRepository.fetchSongFromAlbum();
+    _selectSongList = _viewSongList
+        .where((element) => element.id == id)
         .toList()
-          ..sort((a, b) => a.track!.toInt().compareTo(b.track!.toInt()));
+      ..sort((a, b) => a.track!.toInt().compareTo(b.track!.toInt()));
+    notifyListeners();
     return _selectSongList;
   }
 
-  Future<List<SongModel>> getSongsSortArtists() async {
-    return OnAudioQuery().querySongs(
-      sortType: SongSortType.ARTIST,
-      orderType: OrderType.ASC_OR_SMALLER,
-      uriType: UriType.EXTERNAL,
-    );
-  }
-
-  Future<Uint8List?> getSongsArtwork(
-      AsyncSnapshot<List<SongModel>> item, int index) async {
-    return OnAudioQuery().queryArtwork(
-      item.data![index].id,
-      ArtworkType.AUDIO,
-      format: ArtworkFormat.JPEG,
-      size: 200,
-    );
-  }
-
-  Future<Uint8List?> getArtistAlbumArtwork(
-      List<AlbumModel> albums, int index) async {
-    return OnAudioQuery().queryArtwork(
-      albums[index].id,
+  Future<Uint8List?> getAlbumArtwork(MusicInfo album) async {
+    return _audioQueryRepository.getArtworkByByte(
+      album.id,
       ArtworkType.ALBUM,
-      format: ArtworkFormat.PNG,
-      size: 200,
     );
   }
 
-  Future<Uint8List?> getAlbumArtwork(
-      AsyncSnapshot<List<AlbumModel>> item, int index) async {
-    return OnAudioQuery().queryArtwork(
-      item.data![index].id,
+  Future<Uint8List?> getSongsArtwork(MusicInfo song) async {
+    return _audioQueryRepository.getArtworkByByte(
+      song.id,
       ArtworkType.ALBUM,
-      format: ArtworkFormat.PNG,
-      size: 200,
     );
-  }
-
-  Future<Uint8List?> getArtistArtwork(
-      AsyncSnapshot<List<ArtistModel>> item, int index) async {
-    return OnAudioQuery().queryArtwork(
-      item.data![index].id,
-      ArtworkType.ARTIST,
-      format: ArtworkFormat.JPEG,
-      size: 200,
-    );
-  }
-
-  void initPlayer() {
-    audioPlayer = AudioPlayer();
-
-    // audioPlayer.durationHandler = (d) => setState(
-    //       () {
-    //         _duration = d;
-    //       },
-    //     );
-    // audioPlayer.positionHandler = (p) => setState(
-    //       () {
-    //         _position = p;
-    //       },
-    //     );
-  }
-
-  Future<void> playAudio(AsyncSnapshot<List<SongModel>> item, int index) async {
-    await audioPlayer.play(
-      Platform.isAndroid ? item.data![index].data : item.data![index].uri!,
-    );
-  }
-
-  void seekToSecond(int second) {
-    final newDuration = Duration(seconds: second);
-    audioPlayer.seek(newDuration);
-  }
-
-  Future<void> pauseAudio() async {
-    final response = await audioPlayer.pause();
-    if (response == 1) {
-      // success
-
-    } else {
-      // ignore: avoid_print
-      print('Some error occured in pausing');
-    }
-  }
-
-  Future<void> stopAudio() async {
-    final response = await audioPlayer.stop();
-    if (response == 1) {
-      // success
-
-    } else {
-      // ignore: avoid_print
-      print('Some error occured in stopping');
-    }
-  }
-
-  Future<void> resumeAudio() async {
-    final response = await audioPlayer.resume();
-    if (response == 1) {
-      // success
-
-    } else {
-      // ignore: avoid_print
-      print('Some error occured in resuming');
-    }
   }
 }
