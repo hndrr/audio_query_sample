@@ -71,7 +71,7 @@ class AudioQueryRepository {
   List<MusicInfo> toMusicInfoListFromAlbumList(List<AlbumModel> albumInfoList) {
     final albums = albumInfoList
         .map((AlbumModel item) => MusicInfo(
-              item.albumId,
+              item.id,
               item.album,
               item.album, // 曲と共用してるのでAlbumはtitleと同じものを入れた
               item.artist!,
