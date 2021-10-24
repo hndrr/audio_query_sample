@@ -1,6 +1,6 @@
 # on_audio_query_sample
 
-A new Flutter project.
+ - https://pub.dev/packages/on_audio_query
 
 ## Getting Started
 
