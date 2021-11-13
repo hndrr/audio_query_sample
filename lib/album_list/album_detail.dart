@@ -112,7 +112,7 @@ class AlbumDetailPage extends StatelessWidget {
                                   if (item.data != null &&
                                       item.data!.isNotEmpty) {
                                     return ClipRRect(
-                                      // borderRadius: BorderRadius.circular(50),
+                                      // borderRadius: BorderRadius.circular(50)
                                       clipBehavior: Clip.antiAlias,
                                       child: Image.memory(
                                         item.data!,
