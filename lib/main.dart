@@ -17,7 +17,7 @@ void main() {
           create: (BuildContext context) => ArtistListModel()..init(),
         ),
       ],
-      child: App(),
+      child: const App(),
     ),
   );
 }
