@@ -34,10 +34,7 @@ class AlbumListPage extends StatelessWidget {
             elevation: 2,
           ),
           body: musicInfos.isEmpty
-              ?
-              // Expanded(
-              //     child:
-              model.isLoading
+              ? model.isLoading
                   ? Container(
                       color: Colors.black.withOpacity(0.1),
                       child: const Center(
@@ -48,7 +45,6 @@ class AlbumListPage extends StatelessWidget {
                       ),
                     )
                   : const SizedBox()
-              // )
               : ListView.builder(
                   cacheExtent: 10000,
                   scrollDirection: Axis.vertical,
