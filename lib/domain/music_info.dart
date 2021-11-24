@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 class MusicInfo {
   // ignore: lines_longer_than_80_chars
   MusicInfo(this.id, this.title, this.albumTitle, this.artist,
-      {this.artworkUri, this.track, this.filePath}) {
-    _playState = PlayState.none;
-  }
+      {this.artworkUri, this.track, this.filePath});
 
   // id
   int id;
@@ -30,18 +28,4 @@ class MusicInfo {
   int? track;
 
   String? filePath;
-
-  PlayState? _playState;
-
-  PlayState? get playState => _playState;
-
-  void changePlayState(PlayState playState) {
-    _playState = playState;
-  }
-}
-
-enum PlayState {
-  none,
-  pause,
-  playing,
 }

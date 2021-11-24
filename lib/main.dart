@@ -10,9 +10,6 @@ void main() {
   runApp(
     MultiProvider(
       providers: <SingleChildWidget>[
-        // ChangeNotifierProvider<FabCircularAudioModel>(
-        //   create: (BuildContext context) => FabCircularAudioModel(),
-        // ),
         ChangeNotifierProvider<AlbumListModel>(
           create: (BuildContext context) => AlbumListModel()..init(),
         ),

@@ -11,12 +11,9 @@ environment:
 dependencies:
   audioplayers: ^0.19.1
   cupertino_icons: ^1.0.2
-  fab_circular_menu: ^1.0.2
-  file_picker: ^4.1.2
   flutter:
     sdk: flutter
   on_audio_query: ^2.5.3
-  path_provider: ^2.0.4
   pedantic_mono: ^1.14.0
   provider: ^6.0.1
 

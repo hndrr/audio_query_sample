@@ -6,17 +6,6 @@ class AudioPlayersRepository {
 
   void initPlayer() {
     audioPlayer = AudioPlayer();
-
-    // audioPlayer.durationHandler = (d) => setState(
-    //       () {
-    //         _duration = d;
-    //       },
-    //     );
-    // audioPlayer.positionHandler = (p) => setState(
-    //       () {
-    //         _position = p;
-    //       },
-    //     );
   }
 
   Future<void> playAudio(MusicInfo songlist) async {
