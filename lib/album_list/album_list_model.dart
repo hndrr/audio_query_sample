@@ -65,8 +65,6 @@ class AlbumListModel extends ChangeNotifier {
     await getAlbum();
     // 曲のリストを取得
     await getSongsSortAlbums();
-    // _viewSongList =
-    //     _audioQueryRepository.toMusicInfoListFromSongList(_songList);
     endLoading();
     notifyListeners();
   }
@@ -85,10 +83,6 @@ class AlbumListModel extends ChangeNotifier {
         _viewList.where((element) => element.artist == artist).toList();
   }
 
-  // Future<List<dynamic>> getArtistAlbum(String artist) async {
-  //   return _audioQueryRepository.fetchArtistAlbums(artist);
-  // }
-
   Future<void> getSongsSortAlbums() async {
     _songList = await _audioQueryRepository.fetchSongFromAlbum();
     _viewSongList =
@@ -96,7 +90,6 @@ class AlbumListModel extends ChangeNotifier {
   }
 
   List<MusicInfo> getSongsSpecificAlbum(int id) {
-    // _songList = await _audioQueryRepository.fetchSongFromAlbum();
     _selectSongList = _viewSongList
         .where((element) => element.id == id)
         .toList()
