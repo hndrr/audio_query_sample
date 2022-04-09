@@ -1,17 +1,19 @@
+import 'package:audio_query_sample/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'album_list/album_list.dart';
 import 'artist_list/artist_list.dart';
 
-class App extends StatefulWidget {
+class App extends ConsumerStatefulWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  _AppState createState() => _AppState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AppState();
 }
 
-class _AppState extends State<App> {
+class _AppState extends ConsumerState<App> {
   int _selectedIndex = 0;
 
   @override
@@ -28,6 +30,8 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     const locale = Locale('ja', 'JP');
+    ref.read(artistListModelProvider).init();
+    ref.read(albumListModelProvider).init();
 
     final _widgetList = <Widget>[
       const AlbumListPage(),
