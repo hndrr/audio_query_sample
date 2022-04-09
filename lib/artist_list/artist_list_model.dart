@@ -25,11 +25,11 @@ class ArtistListModel extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    startLoading();
+    // startLoading();
     _audioQueryRepository.requestPermission();
     // Artistのリストを取得
     await getArtists();
-    endLoading();
+    // endLoading();
     notifyListeners();
   }
 
