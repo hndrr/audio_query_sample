@@ -57,7 +57,7 @@ class AlbumListModel extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    startLoading();
+    // startLoading();
     debugPrint('AlbumListModel: called init()');
     _audioQueryRepository.requestPermission();
     _audioPlayersRepository.initPlayer();
@@ -65,7 +65,7 @@ class AlbumListModel extends ChangeNotifier {
     await getAlbum();
     // 曲のリストを取得
     await getSongsSortAlbums();
-    endLoading();
+    // endLoading();
     notifyListeners();
   }
 
